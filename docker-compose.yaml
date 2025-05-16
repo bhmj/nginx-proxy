@@ -1,0 +1,38 @@
+version: '3.8'
+
+volumes:
+  certs:
+  certbot-challenges:
+
+services:
+  certbot:
+    image: certbot/certbot
+    restart: always
+    container_name: certbot-container
+    volumes:
+      - certs:/etc/letsencrypt
+      - certbot-challenges:/var/www/certbot
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'
+    depends_on:
+      - nginx
+  nginx:
+    image: "nginx:latest"
+    container-name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/nginx-proxy/configs:/etc/nginx/conf.d
+      - /var/nginx-proxy/static:/var/www
+      - certs:/etc/letsencrypt
+      - certbot-challenges:/var/www/certbot
+    env_file:
+      - ".env"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "50m"
+    networks:
+      - default
