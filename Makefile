@@ -29,11 +29,13 @@ help:
 	printf "%b\n" "$$USAGE"
 
 setup:
+	touch .env
 	sudo mkdir -p /var/nginx-proxy/configs
 	sudo mkdir -p /var/nginx-proxy/static
-	sudo chmod 777 /var/nginx-proxy/configs
-	sudo chmod 777 /var/nginx-proxy/static
-	touch .env
+	USER=$$(whoami); \
+	GROUP=$$(id -gn); \
+	sudo chown $$USER:$$GROUP /var/nginx-proxy/configs; \
+	sudo chown $$USER:$$GROUP /var/nginx-proxy/static
 
 run:
 	docker compose -f docker-compose.yaml up -d
