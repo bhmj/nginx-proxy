@@ -6,6 +6,7 @@ Usage: make <target>
 
 some of the <targets> are:
 
+  setup            - create required dirs
   run              - run Nginx proxy
   stop             - stop Nginx proxy
 
@@ -27,8 +28,14 @@ export CAKE
 help:
 	printf "%b\n" "$$USAGE"
 
+setup:
+	sudo mkdir -p /var/nginx-proxy/configs
+	sudo mkdir -p /var/nginx-proxy/static
+	sudo chmod 777 /var/nginx-proxy/configs
+	sudo chmod 777 /var/nginx-proxy/static
+	touch .env
+
 run:
-	mkdir -p 
 	docker compose -f docker-compose.yaml up -d
 
 stop:
