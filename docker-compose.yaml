@@ -17,7 +17,7 @@ services:
       - nginx
   nginx:
     image: "nginx:latest"
-    container-name: nginx-proxy
+    container_name: nginx-proxy
     restart: always
     ports:
       - "80:80"
