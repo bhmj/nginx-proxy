@@ -24,7 +24,7 @@ services:
       - "443:443"
     volumes:
       - /var/nginx-proxy/configs:/etc/nginx/conf.d
-      - /var/nginx-proxy/static:/var/www
+      - /var/nginx-proxy/static:/var/www/static
       - certs:/etc/letsencrypt
       - certbot-challenges:/var/www/certbot
     env_file:
