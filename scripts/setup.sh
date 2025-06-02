@@ -14,6 +14,6 @@ sudo chown $USER:$GROUP /var/nginx-proxy/networks
 if [[ $OSTYPE == 'darwin'* ]]; then
     brew install mkcert
 else
-    # sorry non-debian ppl
+    # sorry, non-debian guys
     sudo apt install mkcert
 fi

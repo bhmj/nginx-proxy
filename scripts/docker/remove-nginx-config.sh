@@ -8,7 +8,9 @@ if [ -z "CONF_MASK" ] || [ -z "NAMESPACE" ]; then
   exit 1
 fi
 
-cat /var/nginx-proxy/networks | grep -v ${NAMESPACE} > /tmp/nginx-networks && cat /tmp/nginx-networks > /var/nginx-proxy/networks
+cat /var/nginx-proxy/networks | grep -v ${NAMESPACE} > /tmp/nginx-networks || true
+cat /tmp/nginx-networks > /var/nginx-proxy/networks
+
 docker network disconnect ${NAMESPACE}_net nginx-proxy
 
 for CONF in $CONF_MASK; do

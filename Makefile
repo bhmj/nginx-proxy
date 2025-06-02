@@ -43,17 +43,20 @@ setup:
 
 cleanup:
 	rm -rf /var/nginx-proxy/configs/*
+	> /var/nginx-proxy/networks
 
 dev-up:
-	./scripts/reconnect-networks.sh
+	./scripts/stash.sh
 	docker compose -f docker-compose.dev.yaml up -d
+	./scripts/stash-pop.sh
 
 dev-down:
 	docker compose -f docker-compose.dev.yaml down
 
 prod-up:
-	./scripts/reconnect-networks.sh
+	./scripts/stash.sh
 	docker compose -f docker-compose.prod.yaml up -d
+	./scripts/stash-pop.sh
 
 prod-down:
 	docker compose -f docker-compose.prod.yaml down
