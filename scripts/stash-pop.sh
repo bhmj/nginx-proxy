@@ -17,7 +17,7 @@ while IFS= read -r network; do
 
   set -x
   docker network connect "${network}_net" nginx-proxy
-  @set +x
+  { set +x; } 2>/dev/null
 done < "${NAMESPACES}"
 
 docker exec nginx-proxy nginx -s reload
