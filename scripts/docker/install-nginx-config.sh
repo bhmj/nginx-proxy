@@ -3,13 +3,15 @@
 NAMESPACE=$1 # like "dosasm"
 CONF_MASK=$2 # like "docker-assets/prod/nginx/*.*"
 
-if [ -z "${CONF_MASK}" ] || [ -z "${NAMESPACE}" ]; then
-  printf "Connects a project to nginx-proxy.\nUsage: $0 {namespace} {conf-mask}\n\n  {namespace} is a docker-compose namespace, part of net name\n  {conf-mask} is a path to nginx config(s), can be a mask\n"
+if [[ -z ${CONF_MASK} ]]; then
+  printf "Connects a project to nginx-proxy.\nUsage: $0 {namespace} {conf-mask}\n\n  {namespace} is a docker-compose namespace, part of net name. Can be empty string.\n  {conf-mask} is a path to nginx config(s), can be a mask.\n"
   exit 1
 fi
 
-docker network connect ${NAMESPACE}_net nginx-proxy
-echo ${NAMESPACE} >> /var/nginx-proxy/networks
+if [[ -n ${NAMESPACE} ]]; then
+  docker network connect ${NAMESPACE}_net nginx-proxy
+  echo ${NAMESPACE} >> /var/nginx-proxy/networks
+fi
 
 for CONF in ${CONF_MASK}; do
   if [[ -f "$CONF" ]]; then
