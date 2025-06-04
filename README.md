@@ -1,4 +1,4 @@
-# Nnginx-proxy: Docker HTTP(S) multiserver
+# Nginx-proxy: Docker HTTP(S) multiserver
 
 ## What is it?
 
