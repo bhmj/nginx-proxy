@@ -8,20 +8,10 @@ Usage: make <target>
 some of the <targets> are:
 
   setup               - create required dirs
-  cleanup             - cleanup config dir, must reinit running services
+  cleanup             - cleanup config dir
   dev-up, dev-down    - run in dev mode
   prod-up, prod-down  - run in prod mode
   cert                - generate self-signed cert for the domain (interactive)
-
-The project creates and uses \033[1;33m/var/nginx-proxy/\033[0m dir on host machine.
-Please be aware that it will be written to by multiple external projects.
-
-Production vs development:
-
-                      | \033[1;33mdev\033[0m                | \033[1;33mprod\033[0m
-----------------------+--------------------+--------------------
- certbot container    | no                 | yes
- certs location       | ./certs/{domain}/  | "certs" volume
 
 endef
 export USAGE
