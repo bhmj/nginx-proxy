@@ -7,11 +7,11 @@ This generates a self-signed cert for your domain.
 The result will be saved in ./certs/{domain}/
 "
 
-DOMAIN=""
-
-if [ "$1" == "" ]; then
+if [ -z "$DOMAIN" ] && [ -z "$1" ]; then
   printf "$USAGE"
   read -p "Please enter the domain name (like mydomain.com) : " DOMAIN
+else
+  [ -z "$DOMAIN" ] && DOMAIN=$1
 fi
 
 mkdir -p ./certs/${DOMAIN}
