@@ -28,7 +28,7 @@ services:
       - certbot-challenges:/var/www/certbot
       - ./scripts/docker:/app/scripts
     env_file:
-      - ".env"
+      - ".env_prod"
     logging:
       driver: "json-file"
       options:

@@ -13,6 +13,16 @@ some of the <targets> are:
   prod-up, prod-down  - run in prod mode
   cert                - generate self-signed cert for the domain (interactive)
 
+  dev
+   - runs with local ./certs
+   - uses .env_dev
+   - no certbot
+
+  prod
+   - runs with `certs` volume
+   - uses .env_prod
+   - runs certbot with `certs` volume
+
 endef
 export USAGE
 
