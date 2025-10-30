@@ -9,8 +9,8 @@ some of the <targets> are:
 
   setup               - create required dirs
   cleanup             - cleanup config dir
-  dev-up, dev-down    - run in dev mode
-  prod-up, prod-down  - run in prod mode
+  dev-up, dev-down    - run in dev mode (local self-signed certs)
+  prod-up, prod-down  - run in prod mode (LetsEncrypt certs)
   cert                - generate self-signed cert for the domain (interactive)
 
   dev
