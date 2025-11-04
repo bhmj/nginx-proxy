@@ -1,3 +1,7 @@
+networks:
+  nginx-proxy_net:
+    name: nginx-proxy_net
+
 volumes:
   certs:
   certbot-challenges:
@@ -35,4 +39,4 @@ services:
         max-file: "3"
         max-size: "50m"
     networks:
-      - default
+      - nginx-proxy_net

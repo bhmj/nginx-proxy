@@ -8,17 +8,17 @@ if [[ -z ${CONF_MASK} ]]; then
   exit 1
 fi
 
-if [[ -n ${NAMESPACE} ]]; then
-  cat /var/nginx-proxy/networks | grep -v ${NAMESPACE} > /tmp/nginx-networks || true
-  cat /tmp/nginx-networks > /var/nginx-proxy/networks
-  docker network disconnect ${NAMESPACE}_net nginx-proxy
-fi
-
 for CONF in $CONF_MASK; do
   if [[ -f "$CONF" ]]; then
     CONF_BASENAME=$(basename "$CONF")
     rm /var/nginx-proxy/configs/${CONF_BASENAME}
   fi
 done
+
+if [[ -n ${NAMESPACE} ]]; then
+  cat /var/nginx-proxy/networks | grep -v ${NAMESPACE} > /tmp/nginx-networks || true
+  cat /tmp/nginx-networks > /var/nginx-proxy/networks
+  docker network disconnect ${NAMESPACE}_net nginx-proxy
+fi
 
 docker exec nginx-proxy nginx -s reload
