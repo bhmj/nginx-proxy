@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/nginx-proxy/configs:/etc/nginx/conf.d
       - /var/nginx-proxy/static:/var/www/static
-      - ./certs:/etc/letsencrypt
+      - ./certs:/etc/letsencrypt/live
       - ./scripts/docker:/app/scripts
     env_file:
       - ".env_dev"
