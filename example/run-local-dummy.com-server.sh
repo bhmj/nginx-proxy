@@ -8,8 +8,8 @@ set -e
 pwd | grep example > /dev/null && cd ..
 make cert DOMAIN=${DOMAIN}
 make dev-up
-mkdir -p /var/nginx-proxy/static/${DOMAIN}/
-cp -r example/www/. /var/nginx-proxy/static/${DOMAIN}/
+mkdir -p /var/nginx-proxy/domains/${DOMAIN}/
+cp -r example/www/. /var/nginx-proxy/domains/${DOMAIN}/
 docker exec nginx-proxy cat /app/scripts/install-nginx-config.sh | bash -s -- "" example/dummy.conf
 [[ "$OSTYPE" == "darwin"* ]] && open https://dummy.com
 [[ "$OSTYPE" != "darwin"* ]] && xdg-open https://dummy.com

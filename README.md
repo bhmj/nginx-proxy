@@ -26,8 +26,8 @@ The project creates and uses **/var/nginx-proxy/** dir on host machine. Please b
 Local host path `/var/nginx-proxy/configs` is mapped into Nginx container as `/etc/nginx/conf.d`.  
 Put the project config into `/var/nginx-proxy/configs` and run `docker exec nginx-proxy nginx -s reload`. The script `install-nginx-config.sh` does it for your convenience.
 
-Local host path `/var/nginx-proxy/static` is mapped into Nginx container as `/var/www/static`.
-Copy static data for the project into `/var/nginx-proxy/static/<project_name>/` and it is ready to use.
+Local host path `/var/nginx-proxy/domains` is mapped into Nginx container as `/var/www`.
+Copy static data for the project into `/var/nginx-proxy/domains/{project_domain_name}/` and it is ready to use.
 
 ## Usage
 

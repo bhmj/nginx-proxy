@@ -47,18 +47,18 @@ cleanup:
 
 dev-up:
 	./scripts/stash.sh
+	cp -f scripts/default.conf /var/nginx-proxy/configs/
 	docker compose -f docker-compose.dev.yaml up -d
 	./scripts/stash-pop.sh
 
-dev-down:
-	docker compose -f docker-compose.dev.yaml down
-
 prod-up:
 	./scripts/stash.sh
+	cp -f scripts/default.conf /var/nginx-proxy/configs/
 	docker compose -f docker-compose.prod.yaml up -d
 	./scripts/stash-pop.sh
 
-prod-down:
+down:
+	docker compose -f docker-compose.dev.yaml down
 	docker compose -f docker-compose.prod.yaml down
 
 cert:

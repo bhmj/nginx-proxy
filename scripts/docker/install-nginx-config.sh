@@ -9,7 +9,7 @@ if [[ -z ${CONF_MASK} ]]; then
 fi
 
 if [[ -n ${NAMESPACE} ]]; then
-  docker network connect ${NAMESPACE}_net nginx-proxy
+  docker network connect ${NAMESPACE}_net nginx-proxy || true
   echo ${NAMESPACE} >> /var/nginx-proxy/networks
 fi
 

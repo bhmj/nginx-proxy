@@ -13,7 +13,7 @@ services:
       - "3000:3000" # Grafana
     volumes:
       - /var/nginx-proxy/configs:/etc/nginx/conf.d
-      - /var/nginx-proxy/static:/var/www/static
+      - /var/nginx-proxy/domains:/var/www
       - ./certs:/etc/letsencrypt/live
       - ./scripts/docker:/app/scripts
     env_file:

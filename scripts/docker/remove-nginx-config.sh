@@ -9,10 +9,8 @@ if [[ -z ${CONF_MASK} ]]; then
 fi
 
 for CONF in $CONF_MASK; do
-  if [[ -f "$CONF" ]]; then
-    CONF_BASENAME=$(basename "$CONF")
-    rm /var/nginx-proxy/configs/${CONF_BASENAME}
-  fi
+  CONF_BASENAME=$(basename "$CONF")
+  rm /var/nginx-proxy/configs/${CONF_BASENAME}
 done
 
 if [[ -n ${NAMESPACE} ]]; then
@@ -21,4 +19,5 @@ if [[ -n ${NAMESPACE} ]]; then
   docker network disconnect ${NAMESPACE}_net nginx-proxy
 fi
 
+docker exec nginx-proxy nginx -s reload
 docker exec nginx-proxy nginx -s reload
