@@ -4,13 +4,14 @@
 
 This is a Docker-compose Nginx server setup which simplifies multiple web server deployment.  
 
-## More details
+## Details
 
 It runs Nginx with predefined environment and ready-to-use scripts.  
 In order to add new web server you need:
-  - run the Nginx-proxy (`make dev-up`)
+  - run the Nginx-proxy (`make dev-up` or `make prod-up`)
+  - generate a cert for your base domain (`make cert DOMAIN=yourdomain.com`) -
+    this is a **wildcard** cert (`yourdomain.com` + `*.yourdomain.com`)
   - write an nginx conf file for your server
-  - generate SSL certificate (`make cert`)
   - run your backend or prepare static files
   - install your nginx conf file to Nginx-proxy:  
   `docker exec nginx-proxy cat /app/scripts/install-nginx-config.sh | bash -s -- {namespace} {your-nginx-config.conf}`
@@ -29,22 +30,32 @@ Put the project config into `/var/nginx-proxy/configs` and run `docker exec ngin
 Local host path `/var/nginx-proxy/domains` is mapped into Nginx container as `/var/www`.
 Copy static data for the project into `/var/nginx-proxy/domains/{project_domain_name}/` and it is ready to use.
 
+**This is a copy, not a live mount** - fine for build output or anything
+that doesn't change while you're working (this is what combobox's prod
+`copy_static` uses), but editing your source afterward won't show up until
+you copy again. For anything you're actively editing during dev, don't use
+this path at all: run your own tiny static server (e.g. `nginx:alpine`)
+inside your own project's compose, bind-mount your real source directory
+into *that* container, and `proxy_pass` to it from the conf fragment you
+register here instead. Same end result in the browser, but the mount stays
+inside the repo you actually control and edits show up immediately.
+
 ## Usage
 
 ### Dev mode: 
 
-Certs are generated, domain is substituted using '/etc/hosts'.
+Certs are generated (mkcert, wildcard per base domain), domain is substituted using '/etc/hosts'.
 
-`make cert`      - (interactive) create self-signed cert for "local" domain.  
-`make dev-up`    - run the proxy.  
-`make dev-down`  - stop the proxy.  
+`make cert DOMAIN=x.com`  - (interactive if DOMAIN omitted) create a wildcard cert for `x.com` + `*.x.com`.  
+`make dev-up`             - run the proxy.
+`make down`               - stop the proxy (dev or prod, whichever is running).
 
 ### Prod mode: 
 
-Certs are handled by certbot, domain is assigned using DNS.  
+Certs are handled by certbot, domain is assigned using DNS.
 
-`make prod-up`    - run the proxy.  
-`make prod-down`  - stop the proxy.
+`make prod-up`  - run the proxy.  
+`make down`     - stop the proxy.
 
 ### Production vs development
 
@@ -53,6 +64,24 @@ Certs are handled by certbot, domain is assigned using DNS.
 | domain in /etc/hosts | yes | no
 | certbot container | no | yes
 | certs location | ./certs/{domain}/ | "certs" volume
+| unregistered domain | 404 (dev-only fallback cert) | connection error/TLS failure
+
+### Recovering from an unexpected restart
+
+`stash.sh`/`stash-pop.sh` preserve every registered project's config and
+network attachment across a `make dev-up`/`prod-up` you run yourself. If the
+container instead gets recreated some other way (crash + Docker's
+`restart: always`, a manual `docker rm`, a host reboot without re-running
+`make dev-up`), previously-registered projects' Docker network attachments
+won't automatically reconnect - their config files are still there (host
+bind mount), but nginx-proxy won't be able to reach anything that was
+reached via a `{namespace}_net` connection until you run:
+
+`make reconnect` - reconnects every namespace recorded in `/var/nginx-proxy/networks` and reloads nginx.
+
+(Projects registered with an empty namespace, i.e. reached via
+`host.docker.internal` rather than a docker network join, aren't affected by
+this at all.)
 
 ### Install/remove config
 
@@ -84,7 +113,7 @@ To remove a config for the server, run
                 script.js
             images/
                 image.png
-            - copy to `/var/nginx-proxy/static/<my_project>/` to get `/var/nginx-proxy/static/<my_project>/js`, `/var/nginx-proxy/static/<my_project>/images` etc
+            - copy to `/var/nginx-proxy/domains/<your-domain>/` to get `/var/nginx-proxy/domains/<your-domain>/js`, `/var/nginx-proxy/domains/<your-domain>/images` etc - only for content that doesn't change while you're developing (see the note under "Path mapping")
         dynamic/
-            - do not serve dynamic content; use volumes instead.
+            - do not serve dynamic content this way; proxy_pass to your own backend/container instead.
 ```

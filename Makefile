@@ -9,14 +9,18 @@ some of the <targets> are:
 
   setup               - create required dirs
   cleanup             - cleanup config dir
-  dev-up, dev-down    - run in dev mode (local self-signed certs)
-  prod-up, prod-down  - run in prod mode (LetsEncrypt certs)
-  cert                - generate self-signed cert for the domain (interactive)
+  dev-up, prod-up     - run in dev/prod mode
+  down                - stop dev/prod
+  cert                - generate a wildcard cert for the domain (interactive)
+  reconnect           - reconnect all previously-registered projects' networks
+                        (only needed if the container restarted outside of
+                        dev-up/prod-up, e.g. after a crash - see README)
 
   dev
-   - runs with local ./certs
+   - runs with local ./certs (mkcert)
    - uses .env_dev
    - no certbot
+   - unregistered domains get a dev-only self-signed 404 fallback instead of a connection error
 
   prod
    - runs with `certs` volume
@@ -46,8 +50,11 @@ cleanup:
 	> /var/nginx-proxy/networks
 
 dev-up:
+	mkdir -p ./certs/_default
+	[ -f ./certs/_default/fullchain.pem ] || openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+		-keyout ./certs/_default/privkey.pem -out ./certs/_default/fullchain.pem -subj "/CN=nginx-proxy-default"
 	./scripts/stash.sh
-	cp -f scripts/default.conf /var/nginx-proxy/configs/
+	cp -f scripts/default.dev.conf /var/nginx-proxy/configs/default.conf
 	docker compose -f docker-compose.dev.yaml up -d
 	./scripts/stash-pop.sh
 
@@ -63,6 +70,9 @@ down:
 
 cert:
 	./scripts/make-cert.sh
+
+reconnect:
+	./scripts/reconnect-networks.sh
 
 cake:
 	printf "%b\n" "$$CAKE"

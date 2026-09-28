@@ -3,21 +3,24 @@
 set -e
 
 USAGE="
-This generates a self-signed cert for your domain.
+This generates a locally-trusted self-signed cert for your domain AND a
+wildcard for its subdomains.
 The result will be saved in ./certs/{domain}/
+
+Usage:
+  make cert DOMAIN=mydomain.com
 "
 
 if [ -z "$DOMAIN" ] && [ -z "$1" ]; then
   printf "$USAGE"
-  read -p "Please enter the domain name (like mydomain.com) : " DOMAIN
+  read -p "Please enter the base domain name (like mydomain.com) : " DOMAIN
 else
   [ -z "$DOMAIN" ] && DOMAIN=$1
 fi
 
-mkdir -p ./certs/${DOMAIN}
-# openssl genrsa -out ./certs/${DOMAIN}/privkey.pem 2048
-# openssl req -new -key ./certs/${DOMAIN}/privkey.pem -out ./certs/${DOMAIN}/request.csr -subj "/CN=${DOMAIN}"
-# openssl x509 -req -days 365 -in ./certs/${DOMAIN}/request.csr -signkey ./certs/${DOMAIN}/privkey.pem -out ./certs/${DOMAIN}/fullchain.pem
-mkcert -cert-file ./certs/${DOMAIN}/fullchain.pem -key-file ./certs/${DOMAIN}/privkey.pem ${DOMAIN}
+WILDCARD="*.$DOMAIN"
 
-printf "\nALL DONE\n\nDon't forget to add '127.0.0.1 ${DOMAIN}' line in your /etc/hosts\n\n"
+mkdir -p ./certs/${DOMAIN}
+mkcert -cert-file ./certs/${DOMAIN}/fullchain.pem -key-file ./certs/${DOMAIN}/privkey.pem ${DOMAIN} ${WILDCARD}
+
+printf "\nALL DONE\n\nCert covers: ${DOMAIN} ${WILDCARD}\n\nAdd one /etc/hosts line per subdomain you actually use, e.g.:\n  127.0.0.1 ${DOMAIN}\n  127.0.0.1 cache.${DOMAIN}\n\nAny project's nginx conf can reference this same cert regardless of its own\nserver_name, since it's a wildcard:\n  ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;\n  ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;\n\n"

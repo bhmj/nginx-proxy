@@ -20,4 +20,3 @@ if [[ -n ${NAMESPACE} ]]; then
 fi
 
 docker exec nginx-proxy nginx -s reload
-docker exec nginx-proxy nginx -s reload

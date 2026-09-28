@@ -17,3 +17,12 @@ else
     # sorry, non-debian guys
     sudo apt install mkcert
 fi
+
+# Fixed fallback cert for the dev-only default_server 443 block.
+if [[ ! -f ./certs/_default/fullchain.pem ]]; then
+    mkdir -p ./certs/_default
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+        -keyout ./certs/_default/privkey.pem \
+        -out ./certs/_default/fullchain.pem \
+        -subj "/CN=nginx-proxy-default"
+fi
